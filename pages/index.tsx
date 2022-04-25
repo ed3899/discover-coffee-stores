@@ -1,9 +1,17 @@
+//% libs
 import type {NextPage} from "next";
 import Head from "next/head";
-import Image from "next/image";
+
+//% components
+import Banner from "../components/banner";
+
+//% styles
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const handleOnBannerBtnClick = () => {
+    console.log("Wuju");
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -13,7 +21,10 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Coffee Connoisseur</h1>
+        <Banner
+          buttonText="View stores nearby"
+          handleOnClick={handleOnBannerBtnClick}
+        />
       </main>
     </div>
   );
