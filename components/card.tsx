@@ -9,17 +9,19 @@ import Image from "next/image";
 
 //% styles
 import styles from "./card.module.css";
+import {Fragment} from "react";
 
 type CardPropsT = {
   href: string;
   name: string;
   imgUrl: string;
+  className: string;
 };
 
 const Card = (props: CardPropsT) => {
   return (
     <Link href={props.href}>
-      <a className={styles.cardLink}>
+      <a className={cls(styles.cardLink, props.className)}>
         <div className={cls("glass", styles.container)}>
           <div className={styles.cardHeaderWrapper}>
             <h2 className={styles.cardHeader}>{props.name}</h2>
