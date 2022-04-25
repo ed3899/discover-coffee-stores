@@ -21,7 +21,7 @@ export const getStaticProps = ({params}: GetStaticPropsContext) => {
   return {
     props: {
       coffeeStore: coffeeStoreData.find(
-        coffeeStore => coffeeStore.id.toString() === params!.id 
+        coffeeStore => coffeeStore.id.toString() === params!.id
       ),
     },
   };
@@ -30,7 +30,7 @@ export const getStaticProps = ({params}: GetStaticPropsContext) => {
 export const getStaticPaths: GetStaticPaths = () => {
   return {
     paths: [{params: {id: "1"}}],
-    fallback: false,
+    fallback: true,
   };
 };
 
@@ -38,6 +38,10 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   coffeeStore,
 }) => {
   const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading</div>;
+  }
   return (
     <div>
       Coffee Store Page {router.query.id}
