@@ -1,7 +1,8 @@
 //% libs
 import type {NextPage} from "next";
 import Head from "next/head";
-import cls from "classnames";
+//types
+import {GetStaticProps, InferGetStaticPropsType} from "next";
 
 //% components
 
@@ -18,7 +19,17 @@ import styles from "../styles/Home.module.css";
 //% data
 import coffeeStores from "../data/coffee-stores.json";
 
-const Home: NextPage = () => {
+export const getStaticProps = async () => {
+  return {
+    props: {
+      coffeeStores,
+    },
+  };
+};
+
+const Home: NextPage<
+  InferGetStaticPropsType<typeof getStaticProps>
+> = ({coffeeStores}) => {
   const handleOnBannerBtnClick = () => {
     console.log("Wuju");
   };
