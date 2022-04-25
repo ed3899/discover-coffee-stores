@@ -45,9 +45,10 @@ const Home: NextPage = () => {
             return (
               <Card
                 name={coffeeStore.name}
-                imgUrl={"/coffeeStore.imgUr"}
-                href={`/coffee-store/`}
+                imgUrl={coffeeStore.imgUrl}
+                href={`/coffee-store/${coffeeStore.id}`}
                 className={styles.card}
+                key={coffeeStore.id}
               />
             );
           })}
