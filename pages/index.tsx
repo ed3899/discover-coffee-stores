@@ -27,9 +27,9 @@ export const getStaticProps = async () => {
   };
 };
 
-const Home: NextPage<
-  InferGetStaticPropsType<typeof getStaticProps>
-> = ({coffeeStores}) => {
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
+  coffeeStores,
+}) => {
   const handleOnBannerBtnClick = () => {
     console.log("Wuju");
   };
