@@ -5,7 +5,6 @@ function MyApp({Component, pageProps}: AppProps) {
   return (
     <div>
       <Component {...pageProps} />
-      <footer>2021 Akita</footer>
     </div>
   );
 }
