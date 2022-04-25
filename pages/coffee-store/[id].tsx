@@ -13,6 +13,7 @@ import {
 
 // native
 import Link from "next/link";
+import Head from "next/head";
 
 //% data
 import coffeeStoreData from "../../data/coffee-stores.json";
@@ -28,8 +29,16 @@ export const getStaticProps = ({params}: GetStaticPropsContext) => {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
+  const paths = coffeeStoreData.map(coffeeStore => {
+    return {
+      params: {
+        id: coffeeStore.id.toString(),
+      },
+    };
+  });
+  
   return {
-    paths: [{params: {id: "1"}}],
+    paths,
     fallback: true,
   };
 };
@@ -41,17 +50,24 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   if (router.isFallback) {
     return <div>Loading</div>;
+  } else if (coffeeStore) {
+    const {address, name, neighbourhood} = coffeeStore;
+    return (
+      <div>
+        <Head>
+          <title>{name}</title>
+        </Head>
+        <Link href="/">
+          <a>Back to home</a>
+        </Link>
+        <p>{address}</p>
+        <p>{name}</p>
+        <p>{neighbourhood}</p>
+      </div>
+    );
+  } else {
+    return <div>No content</div>;
   }
-  return (
-    <div>
-      Coffee Store Page {router.query.id}
-      <Link href="/">
-        <a>Back to home</a>
-      </Link>
-      <p>{coffeeStore?.address}</p>
-      <p>{coffeeStore?.name}</p>
-    </div>
-  );
 };
 
 export default CoffeeStore;
