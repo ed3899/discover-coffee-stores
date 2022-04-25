@@ -15,6 +15,9 @@ import Card from "../components/card";
 //% styles
 import styles from "../styles/Home.module.css";
 
+//% data
+import coffeeStores from "../data/coffee-stores.json";
+
 const Home: NextPage = () => {
   const handleOnBannerBtnClick = () => {
     console.log("Wuju");
@@ -38,18 +41,16 @@ const Home: NextPage = () => {
         </div>
 
         <div className={styles.cardLayout}>
-          <Card
-            name="DarkHorse Coffee"
-            imgUrl="/static/hero-image.png"
-            href="/coffee-store/darkhorse-coffee"
-            className={styles.card}
-          />
-          <Card
-            name="DarkHorse Coffee"
-            imgUrl="/static/hero-image.png"
-            href="/coffee-store/darkhorse-coffee"
-            className={styles.card}
-          />
+          {coffeeStores.map(coffeeStore => {
+            return (
+              <Card
+                name={coffeeStore.name}
+                imgUrl={"/coffeeStore.imgUr"}
+                href={`/coffee-store/`}
+                className={styles.card}
+              />
+            );
+          })}
         </div>
       </main>
     </div>
