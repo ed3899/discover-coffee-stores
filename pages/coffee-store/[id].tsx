@@ -1,5 +1,6 @@
 //% libs
 import {useRouter} from "next/router";
+import cls from "classnames";
 //types
 import {
   GetStaticPaths,
@@ -52,6 +53,11 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 }) => {
   const router = useRouter();
 
+  //handlers
+  const handleUpvoteButton = () => {
+    console.log("handle upvote");
+  };
+
   if (router.isFallback) {
     return <div>Loading</div>;
   } else if (coffeeStore) {
@@ -62,14 +68,14 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <title>{name}</title>
         </Head>
 
+        <div className={styles.backToHomeLink}>
+          <Link href="/">
+            <a>Back to home</a>
+          </Link>
+        </div>
+        
         <div className={styles.container}>
           <div className={styles.col1}>
-            <div className={styles.backToHomeLink}>
-              <Link href="/">
-                <a>Back to home</a>
-              </Link>
-            </div>
-
             <div className={styles.nameWrapper}>
               <h1 className={styles.name}>{name}</h1>
             </div>
@@ -83,9 +89,27 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             />
           </div>
 
-          <div className={styles.col2}>
-            <p>{address}</p>
-            <p>{neighbourhood}</p>
+          <div className={cls("glass", styles.col2)}>
+            <div className={styles.iconWrapper}>
+              <Image src="/static/icons/nearMe.svg" width={50} height={50} />
+              <p className={styles.text}>{address}</p>
+            </div>
+
+            <div className={styles.iconWrapper}>
+              <Image src="/static/icons/places.svg" width={50} height={50} />
+              <p className={styles.text}>{neighbourhood}</p>
+            </div>
+
+            <div className={styles.iconWrapper}>
+              <Image src="/static/icons/star.svg" width={50} height={50} />
+              <p className={styles.text}>1</p>
+            </div>
+
+            <button
+              className={styles.upvoteButton}
+              onClick={handleUpvoteButton}>
+              Up vote!
+            </button>
           </div>
         </div>
       </div>
