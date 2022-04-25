@@ -2,7 +2,7 @@
 import type {NextPage} from "next";
 import Head from "next/head";
 //types
-import {GetStaticProps, InferGetStaticPropsType} from "next";
+import {InferGetStaticPropsType} from "next";
 
 //% components
 
@@ -17,12 +17,12 @@ import Card from "../components/card";
 import styles from "../styles/Home.module.css";
 
 //% data
-import coffeeStores from "../data/coffee-stores.json";
+import coffeeStoresData from "../data/coffee-stores.json";
 
 export const getStaticProps = async () => {
   return {
     props: {
-      coffeeStores,
+      coffeeStores: coffeeStoresData,
     },
   };
 };
@@ -51,19 +51,24 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
 
-        <div className={styles.cardLayout}>
-          {coffeeStores.map(coffeeStore => {
-            return (
-              <Card
-                name={coffeeStore.name}
-                imgUrl={coffeeStore.imgUrl}
-                href={`/coffee-store/${coffeeStore.id}`}
-                className={styles.card}
-                key={coffeeStore.id}
-              />
-            );
-          })}
-        </div>
+        {coffeeStores.length > 0 && (
+          <>
+            <h2 className={styles.heading2}>Toronto stores</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStores.map(coffeeStore => {
+                return (
+                  <Card
+                    name={coffeeStore.name}
+                    imgUrl={coffeeStore.imgUrl}
+                    href={`/coffee-store/${coffeeStore.id}`}
+                    className={styles.card}
+                    key={coffeeStore.id}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
