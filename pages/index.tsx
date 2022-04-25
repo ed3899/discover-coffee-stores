@@ -3,6 +3,11 @@ import type {NextPage} from "next";
 import Head from "next/head";
 
 //% components
+
+// native
+import Image from "next/image";
+
+//
 import Banner from "../components/banner";
 
 //% styles
@@ -25,6 +30,10 @@ const Home: NextPage = () => {
           buttonText="View stores nearby"
           handleOnClick={handleOnBannerBtnClick}
         />
+
+        <div className={styles.heroImage}>
+          <Image src="/static/hero-image.png" width={700} height={400} />
+        </div>
       </main>
     </div>
   );
