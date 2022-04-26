@@ -33,8 +33,25 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   coffeeStores,
 }) => {
   const handleOnBannerBtnClick = () => {
-    console.log("Wuju");
+    const successCb: PositionCallback = position => {
+      const {
+        coords: {latitude, longitude},
+      } = position;
+
+      alert(`Your latitude is ${latitude} and longitude is ${longitude}`);
+    };
+
+    const errorCb: PositionErrorCallback = () => {
+      alert("Unable to retrieve location");
+    };
+    
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(successCb, errorCb);
+    } else {
+      alert("Your browser doesn't support geo-location");
+    }
   };
+
   return (
     <div className={styles.container}>
       <Head>
