@@ -21,22 +21,24 @@ import Image from "next/image";
 import styles from "../../styles/coffee-store.module.css";
 
 //% data
-import coffeeStoreData from "../../data/coffee-stores.json";
+// import coffeeStoreData from "../../data/coffee-stores.json";
 
 export const getStaticProps = async ({params}: GetStaticPropsContext) => {
   const coffeeStores = await fetchCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find(
+    coffeeStore => coffeeStore.fsq_id === params!.id
+  );
 
   return {
     props: {
-      coffeeStore: coffeeStores.find(
-        coffeeStore => coffeeStore.fsq_id === params!.id
-      ),
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     },
   };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const coffeeStores = await fetchCoffeeStores();
+
   const paths = coffeeStores.map(coffeeStore => {
     return {
       params: {
@@ -51,9 +53,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  coffeeStore,
-}) => {
+const CoffeeStore: NextPage<
+  InferGetStaticPropsType<typeof getStaticProps>
+> = props => {
   const router = useRouter();
 
   //handlers
@@ -63,16 +65,13 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   if (router.isFallback) {
     return <div>Loading</div>;
-  } else if (coffeeStore) {
-    const {
-      location: {formatted_address, neighborhood},
-      name,
-      imgUrl,
-    } = coffeeStore;
+  } else if (props.coffeeStore) {
+    console.log(props.coffeeStore);
+
     return (
       <div className={styles.layout}>
         <Head>
-          <title>{name}</title>
+          <title>{(props.coffeeStore as any).name}</title>
         </Head>
 
         <div className={styles.backToHomeLink}>
@@ -84,28 +83,35 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <div className={styles.container}>
           <div className={styles.col1}>
             <div className={styles.nameWrapper}>
-              <h1 className={styles.name}>{name}</h1>
+              <h1 className={styles.name}>{(props.coffeeStore as any).name}</h1>
             </div>
 
             <Image
-              src={imgUrl}
+              src={
+                (props.coffeeStore as any).imgUrl ||
+                "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+              }
               width={600}
               height={360}
               className={styles.storeImg}
-              alt={name}
+              alt={(props.coffeeStore as any).name}
             />
           </div>
 
           <div className={cls("glass", styles.col2)}>
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/nearMe.svg" width={50} height={50} />
-              <p className={styles.text}>{formatted_address}</p>
+              <p className={styles.text}>
+                {(props.coffeeStore as any).formatted_address}
+              </p>
             </div>
 
-            {neighborhood && (
+            {(props.coffeeStore as any).neighborhood && (
               <div className={styles.iconWrapper}>
                 <Image src="/static/icons/places.svg" width={50} height={50} />
-                <p className={styles.text}>{neighborhood[0]}</p>
+                <p className={styles.text}>
+                  {(props.coffeeStore as any).neighborhood[0]}
+                </p>
               </div>
             )}
 

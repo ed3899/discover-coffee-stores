@@ -4,6 +4,7 @@ import Head from "next/head";
 import {fetchCoffeeStores} from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
 import {useEffect, useState, useReducer} from "react";
+import {v4 as uuidv4} from "uuid";
 
 //types
 import {InferGetStaticPropsType} from "next";
@@ -54,7 +55,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         const fetchData = async () => {
           const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
           setCoffeeStoresNearUser(fetchedCoffeeStores);
-          console.log({fetchedCoffeeStores});
+          // console.log({fetchedCoffeeStores});
         };
 
         fetchData();
@@ -118,7 +119,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     }
                     href={`/coffee-store/${coffeeStore.fsq_id}`}
                     className={styles.card}
-                    key={coffeeStore.fsq_id}
+                    key={uuidv4()}
                   />
                 );
               })}
@@ -141,7 +142,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                     }
                     href={`/coffee-store/${coffeeStore.fsq_id}`}
                     className={styles.card}
-                    key={coffeeStore.fsq_id}
+                    key={uuidv4()}
                   />
                 );
               })}
