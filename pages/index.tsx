@@ -19,10 +19,53 @@ import styles from "../styles/Home.module.css";
 //% data
 import coffeeStoresData from "../data/coffee-stores.json";
 
+type CoffeeStoreT = {
+  fsq_id: string;
+  categories: [[unknown]];
+  chains: [[unknown]];
+  distance: number;
+  geocodes: {main: [unknown]};
+  link: string;
+  location: {
+    address: string;
+    country: string;
+    cross_street: string;
+    formatted_address: string;
+    locality: string;
+    postcode: string;
+    region: string;
+  };
+  name: string;
+  related_places: unknown;
+  timezone: string;
+};
+
 export const getStaticProps = async () => {
+  const url =
+    "https://api.foursquare.com/v3/places/search?query=coffee-shop&categories=13035&near=Merida%2CMexico&limit=6";
+  const options = {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: process.env.FOURSQUARE_API_KEY!,
+    },
+  };
+  const res = await fetch(url, options).catch(err => {
+    throw new Error(`fetching res error ${err}`);
+  });
+
+  const resToJson = await (res as Response).json().catch(err => {
+    throw new Error(`resToJson Error ${err}`);
+  });
+
+  const data = resToJson.results as CoffeeStoreT[];
+
+  //lacks mapping data
+  console.log(data);
+
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores: data,
     },
   };
 };
@@ -59,10 +102,13 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 return (
                   <Card
                     name={coffeeStore.name}
-                    imgUrl={coffeeStore.imgUrl}
-                    href={`/coffee-store/${coffeeStore.id}`}
+                    imgUrl={
+                      (coffeeStore as any).imgUrl ||
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${coffeeStore.fsq_id}`}
                     className={styles.card}
-                    key={coffeeStore.id}
+                    key={coffeeStore.fsq_id}
                   />
                 );
               })}

@@ -34,6 +34,7 @@ export const getStaticProps = ({params}: GetStaticPropsContext) => {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
+  console.log(process.env.FOURSQUARE_API_KEY);
   const paths = coffeeStoreData.map(coffeeStore => {
     return {
       params: {
@@ -73,7 +74,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             <a>Back to home</a>
           </Link>
         </div>
-        
+
         <div className={styles.container}>
           <div className={styles.col1}>
             <div className={styles.nameWrapper}>
