@@ -23,6 +23,7 @@ type CoffeeStoreT = {
     locality: string;
     postcode: string;
     region: string;
+    neighborhood?: string[];
   };
   name: string;
   related_places: unknown;
@@ -30,7 +31,7 @@ type CoffeeStoreT = {
 };
 export const fetchCoffeeStores = async () => {
   // "https://api.foursquare.com/v3/places/search?query=coffee-shop&categories=13035&near=Merida%2CMexico&limit=6"
-  
+
   const url = getUrlForCoffeeStores("coffee-shop", 13035, "Merida,Mexico", 6);
   const options = {
     method: "GET",

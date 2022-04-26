@@ -1,10 +1,10 @@
 //% libs
 import {useRouter} from "next/router";
 import cls from "classnames";
+import {fetchCoffeeStores} from "../../lib/coffee-stores";
 //types
 import {
   GetStaticPaths,
-  GetStaticProps,
   GetStaticPropsContext,
   InferGetStaticPropsType,
   NextPage,
@@ -23,22 +23,24 @@ import styles from "../../styles/coffee-store.module.css";
 //% data
 import coffeeStoreData from "../../data/coffee-stores.json";
 
-export const getStaticProps = ({params}: GetStaticPropsContext) => {
+export const getStaticProps = async ({params}: GetStaticPropsContext) => {
+  const coffeeStores = await fetchCoffeeStores();
+
   return {
     props: {
-      coffeeStore: coffeeStoreData.find(
-        coffeeStore => coffeeStore.id.toString() === params!.id
+      coffeeStore: coffeeStores.find(
+        coffeeStore => coffeeStore.fsq_id === params!.id
       ),
     },
   };
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  console.log(process.env.FOURSQUARE_API_KEY);
-  const paths = coffeeStoreData.map(coffeeStore => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const coffeeStores = await fetchCoffeeStores();
+  const paths = coffeeStores.map(coffeeStore => {
     return {
       params: {
-        id: coffeeStore.id.toString(),
+        id: coffeeStore.fsq_id,
       },
     };
   });
@@ -62,7 +64,10 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   if (router.isFallback) {
     return <div>Loading</div>;
   } else if (coffeeStore) {
-    const {address, name, neighbourhood, imgUrl} = coffeeStore;
+    const {
+      location: {formatted_address, neighborhood},
+      name,
+    } = coffeeStore;
     return (
       <div className={styles.layout}>
         <Head>
@@ -82,7 +87,9 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </div>
 
             <Image
-              src={imgUrl}
+              src={
+                "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+              }
               width={600}
               height={360}
               className={styles.storeImg}
@@ -93,13 +100,15 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <div className={cls("glass", styles.col2)}>
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/nearMe.svg" width={50} height={50} />
-              <p className={styles.text}>{address}</p>
+              <p className={styles.text}>{formatted_address}</p>
             </div>
 
-            <div className={styles.iconWrapper}>
-              <Image src="/static/icons/places.svg" width={50} height={50} />
-              <p className={styles.text}>{neighbourhood}</p>
-            </div>
+            {neighborhood && (
+              <div className={styles.iconWrapper}>
+                <Image src="/static/icons/places.svg" width={50} height={50} />
+                <p className={styles.text}>{neighborhood[0]}</p>
+              </div>
+            )}
 
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/star.svg" width={50} height={50} />

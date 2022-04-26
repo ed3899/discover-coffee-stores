@@ -18,7 +18,6 @@ import Card from "../components/card";
 import styles from "../styles/Home.module.css";
 
 //% data
-import coffeeStoresData from "../data/coffee-stores.json";
 
 export const getStaticProps = async () => {
   const data = await fetchCoffeeStores();
