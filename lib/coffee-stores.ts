@@ -40,7 +40,7 @@ const getListOfCoffeeStoresPhotos = async () => {
   return unsplashResults;
 };
 
-type CoffeeStoreT = {
+export type CoffeeStoreT = {
   fsq_id: string;
   categories: [[unknown]];
   chains: [[unknown]];

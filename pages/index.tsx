@@ -3,10 +3,11 @@ import type {NextPage} from "next";
 import Head from "next/head";
 import {fetchCoffeeStores} from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
-import {useEffect} from "react";
+import {useEffect, useState, useReducer} from "react";
 
 //types
 import {InferGetStaticPropsType} from "next";
+import {CoffeeStoreT} from "../lib/coffee-stores";
 
 //% components
 
@@ -38,16 +39,30 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const {latLong, locationErrorMsg, isFindingLocation, handleTrackLocation} =
     useTrackLocation();
 
+  const [coffeeStoresNearUser, setCoffeeStoresNearUser] = useState<
+    (CoffeeStoreT & {imgUrl: string})[]
+  >([]);
+
+  const [coffeeStoresNearUserError, setCoffeeStoresNearUserError] = useState({
+    isError: false,
+    errorMsg: "",
+  });
+
   useEffect(() => {
     if (latLong) {
       try {
         const fetchData = async () => {
           const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+          setCoffeeStoresNearUser(fetchedCoffeeStores);
           console.log({fetchedCoffeeStores});
         };
 
         fetchData();
       } catch (error) {
+        setCoffeeStoresNearUserError({
+          isError: true,
+          errorMsg: (error as Error).message,
+        });
         throw new Error(`at useEffect ${error}`);
       }
     }
@@ -71,14 +86,47 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           handleOnClick={handleOnBannerBtnClick}
         />
 
-        {/* Error message */}
+        {/* Error message - Location */}
         {locationErrorMsg && (
           <span>Something went wrong: {locationErrorMsg}</span>
         )}
 
+        {/* Error message - setCoffeeStoresNearUserError */}
+        {coffeeStoresNearUserError.isError && (
+          <span>
+            Something went wrong: {coffeeStoresNearUserError.errorMsg}
+          </span>
+        )}
+
+        {/* Hero image */}
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
+
+        {/* User location based stores */}
+        {coffeeStoresNearUser.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Stores near me</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStoresNearUser.map(coffeeStore => {
+                return (
+                  <Card
+                    name={coffeeStore.name}
+                    imgUrl={
+                      coffeeStore.imgUrl ??
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${coffeeStore.fsq_id}`}
+                    className={styles.card}
+                    key={coffeeStore.fsq_id}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Toronto stores */}
         {coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Toronto stores</h2>
