@@ -2,6 +2,8 @@
 import type {NextPage} from "next";
 import Head from "next/head";
 import {fetchCoffeeStores} from "../lib/coffee-stores";
+import useTrackLocation from "../hooks/use-track-location";
+
 //types
 import {InferGetStaticPropsType} from "next";
 
@@ -32,24 +34,12 @@ export const getStaticProps = async () => {
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   coffeeStores,
 }) => {
+  const {latLong, locationErrorMsg, isFindingLocation, handleTrackLocation} =
+    useTrackLocation();
+
+  console.log({latLong, locationErrorMsg});
   const handleOnBannerBtnClick = () => {
-    const successCb: PositionCallback = position => {
-      const {
-        coords: {latitude, longitude},
-      } = position;
-
-      alert(`Your latitude is ${latitude} and longitude is ${longitude}`);
-    };
-
-    const errorCb: PositionErrorCallback = () => {
-      alert("Unable to retrieve location");
-    };
-    
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(successCb, errorCb);
-    } else {
-      alert("Your browser doesn't support geo-location");
-    }
+    handleTrackLocation();
   };
 
   return (
@@ -62,16 +52,20 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
       <main className={styles.main}>
         <Banner
-          buttonText="View stores nearby"
+          buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           handleOnClick={handleOnBannerBtnClick}
         />
+
+        {/* Error message */}
+        {locationErrorMsg && (
+          <span>Something went wrong: {locationErrorMsg}</span>
+        )}
 
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
-
         {coffeeStores.length > 0 && (
-          <>
+          <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Toronto stores</h2>
             <div className={styles.cardLayout}>
               {coffeeStores.map(coffeeStore => {
@@ -89,7 +83,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 );
               })}
             </div>
-          </>
+          </div>
         )}
       </main>
     </div>
