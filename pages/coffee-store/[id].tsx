@@ -77,7 +77,7 @@ const CoffeeStore: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
         <div className={styles.backToHomeLink}>
           <Link href="/">
-            <a>Back to home</a>
+            <a> ⟸ Back to home</a>
           </Link>
         </div>
 
