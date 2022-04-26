@@ -3,6 +3,7 @@ import type {NextPage} from "next";
 import Head from "next/head";
 import {fetchCoffeeStores} from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
+import {useEffect} from "react";
 
 //types
 import {InferGetStaticPropsType} from "next";
@@ -37,7 +38,21 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const {latLong, locationErrorMsg, isFindingLocation, handleTrackLocation} =
     useTrackLocation();
 
-  console.log({latLong, locationErrorMsg});
+  useEffect(() => {
+    if (latLong) {
+      try {
+        const fetchData = async () => {
+          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+          console.log({fetchedCoffeeStores});
+        };
+
+        fetchData();
+      } catch (error) {
+        throw new Error(`at useEffect ${error}`);
+      }
+    }
+  }, [latLong]);
+
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();
   };

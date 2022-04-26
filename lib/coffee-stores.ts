@@ -3,24 +3,33 @@ import {createApi} from "unsplash-js";
 
 // unsplash
 const unsplashApi = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY!,
+  accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY!,
 });
 
 const getUrlForCoffeeStores = (
-  query: string,
-  categories: number,
-  nearByLocation: string,
-  limit: number
-) =>
-  `https://api.foursquare.com/v3/places/search?query=${query}&categories=${categories.toString()}&near=${encodeURIComponent(
-    nearByLocation
-  )}&limit=${limit.toString()}`;
+  _query: string,
+  _latLong: string,
+  _categories: number,
+  _limit: number
+) => {
+  //https://api.foursquare.com/v3/places/search?query=coffee-shop&ll=20.400417%2C-89.134857&categories=13035&limit=6
+
+  const cleanedString = _latLong
+    .trim()
+    .split("")
+    .filter(l => l !== " ")
+    .join("");
+
+  const latLong = encodeURIComponent(cleanedString);
+
+  return `https://api.foursquare.com/v3/places/search?query=${_query}&ll=${latLong}&categories=${_categories.toString()}&limit=${_limit.toString()}`;
+};
 
 const getListOfCoffeeStoresPhotos = async () => {
   const {response} = await unsplashApi.search
     .getPhotos({
       query: "coffee shop",
-      perPage: 10,
+      perPage: 40,
     })
     .catch(err => {
       throw new Error(`err fetching photos from unsplash ${err}`);
@@ -52,20 +61,24 @@ type CoffeeStoreT = {
   related_places: unknown;
   timezone: string;
 };
-export const fetchCoffeeStores = async () => {
-  // "https://api.foursquare.com/v3/places/search?query=coffee-shop&categories=13035&near=Merida%2CMexico&limit=6"
-
+export const fetchCoffeeStores = async (
+  _latlong: string = "20.400417,-89.134857",
+  _limit: number = 6
+) => {
   const photos = await getListOfCoffeeStoresPhotos();
 
-  const url = getUrlForCoffeeStores("coffee-shop", 13035, "Merida,Mexico", 6);
+  const url = getUrlForCoffeeStores("coffee-shop", _latlong, 13035, _limit);
+
   const options = {
     method: "GET",
     headers: {
       Accept: "application/json",
-      Authorization: process.env.FOURSQUARE_API_KEY!,
+      Authorization: process.env.NEXT_PUBLIC_FOURSQUARE_API_KEY!,
+      "Access-Control-Allow-Origin": "*",
     },
   };
   const res = await fetch(url, options).catch(err => {
+    console.log({url, options});
     throw new Error(`fetching res error ${err}`);
   });
 
@@ -74,9 +87,6 @@ export const fetchCoffeeStores = async () => {
   });
 
   const data = resToJson.results as CoffeeStoreT[];
-
-  //   //lacks mapping data
-  //   console.log(data);
 
   const coffeeStores = data.map((coffeeStore, idx) => {
     return {
