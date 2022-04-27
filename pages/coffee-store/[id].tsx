@@ -21,7 +21,6 @@ import Image from "next/image";
 import styles from "../../styles/coffee-store.module.css";
 
 //% data
-// import coffeeStoreData from "../../data/coffee-stores.json";
 
 export const getStaticProps = async ({params}: GetStaticPropsContext) => {
   const coffeeStores = await fetchCoffeeStores();
