@@ -1,7 +1,15 @@
 //% libs
+// native
 import {useRouter} from "next/router";
+import {useContext, useEffect, useState} from "react";
+
+// external
 import cls from "classnames";
-import {fetchCoffeeStores} from "../../lib/coffee-stores";
+
+// local
+import {CoffeeStoreT, fetchCoffeeStores} from "../../lib/coffee-stores";
+import {isEmpty} from "../../utils";
+
 //types
 import {
   GetStaticPaths,
@@ -11,11 +19,13 @@ import {
 } from "next";
 
 //% components
-
 // native
 import Link from "next/link";
 import Head from "next/head";
 import Image from "next/image";
+
+// context
+import {StoreContext} from "../_app";
 
 //% styles
 import styles from "../../styles/coffee-store.module.css";
@@ -24,8 +34,9 @@ import styles from "../../styles/coffee-store.module.css";
 
 export const getStaticProps = async ({params}: GetStaticPropsContext) => {
   const coffeeStores = await fetchCoffeeStores();
+
   const findCoffeeStoreById = coffeeStores.find(
-    coffeeStore => coffeeStore.fsq_id === params!.id
+    coffeeStore => coffeeStore.fsq_id === params!.id //dynamic id
   );
 
   return {
@@ -54,23 +65,43 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const CoffeeStore: NextPage<
   InferGetStaticPropsType<typeof getStaticProps>
-> = props => {
+> = initialProps => {
   const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading</div>;
+  }
+
+  const id = router.query.id as string;
+
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+
+  const {
+    state: {coffeeStores},
+  } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore)) {
+      if (coffeeStores.length > 0) {
+        const findCoffeeStoreById = coffeeStores.find(
+          coffeeStore => coffeeStore.fsq_id === id
+        );
+
+        setCoffeeStore(findCoffeeStoreById);
+      }
+    }
+  }, [id]);
 
   //handlers
   const handleUpvoteButton = () => {
     console.log("handle upvote");
   };
 
-  if (router.isFallback) {
-    return <div>Loading</div>;
-  } else if (props.coffeeStore) {
-    console.log(props.coffeeStore);
-
-    return (
+  return (
+    (coffeeStore as any).location && (
       <div className={styles.layout}>
         <Head>
-          <title>{(props.coffeeStore as any).name}</title>
+          <title>{(coffeeStore as CoffeeStoreT).name}</title>
         </Head>
 
         <div className={styles.backToHomeLink}>
@@ -82,18 +113,20 @@ const CoffeeStore: NextPage<
         <div className={styles.container}>
           <div className={styles.col1}>
             <div className={styles.nameWrapper}>
-              <h1 className={styles.name}>{(props.coffeeStore as any).name}</h1>
+              <h1 className={styles.name}>
+                {(coffeeStore as CoffeeStoreT).name}
+              </h1>
             </div>
 
             <Image
               src={
-                (props.coffeeStore as any).imgUrl ||
+                (coffeeStore as CoffeeStoreT & {imgUrl: string}).imgUrl ||
                 "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
               }
               width={600}
               height={360}
               className={styles.storeImg}
-              alt={(props.coffeeStore as any).name}
+              alt={(coffeeStore as CoffeeStoreT).name}
             />
           </div>
 
@@ -101,15 +134,15 @@ const CoffeeStore: NextPage<
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/nearMe.svg" width={50} height={50} />
               <p className={styles.text}>
-                {(props.coffeeStore as any).formatted_address}
+                {(coffeeStore as CoffeeStoreT).location.formatted_address}
               </p>
             </div>
 
-            {(props.coffeeStore as any).neighborhood && (
+            {(coffeeStore as CoffeeStoreT).location.neighborhood && (
               <div className={styles.iconWrapper}>
                 <Image src="/static/icons/places.svg" width={50} height={50} />
                 <p className={styles.text}>
-                  {(props.coffeeStore as any).neighborhood[0]}
+                  {(coffeeStore as CoffeeStoreT).location.neighborhood![0]}
                 </p>
               </div>
             )}
@@ -127,10 +160,8 @@ const CoffeeStore: NextPage<
           </div>
         </div>
       </div>
-    );
-  } else {
-    return <div>No content</div>;
-  }
+    )
+  );
 };
 
 export default CoffeeStore;
