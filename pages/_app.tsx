@@ -1,12 +1,12 @@
 //% libs
-import {createContext, PropsWithChildren, useReducer} from "react";
+import {createContext, Dispatch, PropsWithChildren, useReducer} from "react";
 // types
 import type {AppProps} from "next/app";
 
 //% styles
 import "../styles/globals.css";
 
-const ACTION_TYPES = {
+export const ACTION_TYPES = {
   SET_LAT_LONG: "SET_LAT_LONG",
   SET_COFFEE_STORES: "SET_COFFEE_STORES",
 };
@@ -22,7 +22,7 @@ const initialState: InitialStateT = {
 
 const storeReducer = (
   state: InitialStateT,
-  action: {type: string; payload: InitialStateT}
+  action: {type: string; payload: any}
 ) => {
   switch (action.type) {
     case ACTION_TYPES.SET_LAT_LONG: {
@@ -38,7 +38,20 @@ const storeReducer = (
   }
 };
 
-const StoreContext = createContext({});
+type StoreContextT = {
+  state: InitialStateT;
+  dispatch: Dispatch<{
+    type: string;
+    payload: any;
+  }>;
+};
+export const StoreContext = createContext<StoreContextT>({
+  state: {
+    latLong: "",
+    coffeeStores: [],
+  },
+  dispatch: () => {},
+});
 
 const StoreProvider = ({children}: PropsWithChildren<{}>) => {
   const [state, dispatch] = useReducer(storeReducer, initialState);

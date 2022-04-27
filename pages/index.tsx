@@ -1,23 +1,30 @@
 //% libs
+// native
 import type {NextPage} from "next";
 import Head from "next/head";
-import {fetchCoffeeStores} from "../lib/coffee-stores";
-import useTrackLocation from "../hooks/use-track-location";
-import {useEffect, useState, useReducer} from "react";
+import {useEffect, useState, useContext} from "react";
+
+// external
 import {v4 as uuidv4} from "uuid";
 
-//types
+// local
+import {fetchCoffeeStores} from "../lib/coffee-stores";
+import useTrackLocation from "../hooks/use-track-location";
+
+// types
 import {InferGetStaticPropsType} from "next";
 import {CoffeeStoreT} from "../lib/coffee-stores";
 
 //% components
-
 // native
 import Image from "next/image";
 
-//
+// local
 import Banner from "../components/banner";
 import Card from "../components/card";
+
+// context
+import {ACTION_TYPES, StoreContext} from "./_app";
 
 //% styles
 import styles from "../styles/Home.module.css";
@@ -34,28 +41,33 @@ export const getStaticProps = async () => {
   };
 };
 
-const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  coffeeStores,
-}) => {
-  const {latLong, locationErrorMsg, isFindingLocation, handleTrackLocation} =
+const Home: NextPage<
+  InferGetStaticPropsType<typeof getStaticProps>
+> = props => {
+  const {locationErrorMsg, isFindingLocation, handleTrackLocation} =
     useTrackLocation();
-
-  const [coffeeStoresNearUser, setCoffeeStoresNearUser] = useState<
-    (CoffeeStoreT & {imgUrl: string})[]
-  >([]);
 
   const [coffeeStoresNearUserError, setCoffeeStoresNearUserError] = useState({
     isError: false,
     errorMsg: "",
   });
 
+  const {dispatch, state} = useContext(StoreContext);
+
+  const {coffeeStores, latLong} = state;
+
   useEffect(() => {
     if (latLong) {
       try {
         const fetchData = async () => {
           const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
-          setCoffeeStoresNearUser(fetchedCoffeeStores);
           // console.log({fetchedCoffeeStores});
+          dispatch({
+            type: ACTION_TYPES.SET_COFFEE_STORES,
+            payload: {
+              coffeeStores: fetchedCoffeeStores,
+            },
+          });
         };
 
         fetchData();
@@ -105,34 +117,36 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         </div>
 
         {/* User location based stores */}
-        {coffeeStoresNearUser.length > 0 && (
+        {coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Stores near me</h2>
             <div className={styles.cardLayout}>
-              {coffeeStoresNearUser.map(coffeeStore => {
-                return (
-                  <Card
-                    name={coffeeStore.name}
-                    imgUrl={
-                      coffeeStore.imgUrl ??
-                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-                    }
-                    href={`/coffee-store/${coffeeStore.fsq_id}`}
-                    className={styles.card}
-                    key={uuidv4()}
-                  />
-                );
-              })}
+              {(coffeeStores as (CoffeeStoreT & {imgUrl: string})[]).map(
+                coffeeStore => {
+                  return (
+                    <Card
+                      name={coffeeStore.name}
+                      imgUrl={
+                        coffeeStore.imgUrl ??
+                        "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                      }
+                      href={`/coffee-store/${coffeeStore.fsq_id}`}
+                      className={styles.card}
+                      key={uuidv4()}
+                    />
+                  );
+                }
+              )}
             </div>
           </div>
         )}
 
         {/* Toronto stores */}
-        {coffeeStores.length > 0 && (
+        {props.coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Toronto stores</h2>
             <div className={styles.cardLayout}>
-              {coffeeStores.map(coffeeStore => {
+              {props.coffeeStores.map(coffeeStore => {
                 return (
                   <Card
                     name={coffeeStore.name}
