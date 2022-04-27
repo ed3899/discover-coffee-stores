@@ -81,8 +81,15 @@ const CoffeeStore: NextPage<
   } = useContext(StoreContext);
 
   useEffect(() => {
+    console.group("useEffect");
+    console.log("useEffect");
+
     if (isEmpty(initialProps.coffeeStore)) {
+      console.log(initialProps.coffeeStore);
+      console.log("First if");
+      console.log(`Coffee stores from context ${coffeeStores}`);
       if (coffeeStores.length > 0) {
+        console.log("Second if");
         const findCoffeeStoreById = coffeeStores.find(
           coffeeStore => coffeeStore.fsq_id === id
         );
@@ -90,6 +97,7 @@ const CoffeeStore: NextPage<
         setCoffeeStore(findCoffeeStoreById);
       }
     }
+    console.groupEnd();
   }, [id]);
 
   //handlers

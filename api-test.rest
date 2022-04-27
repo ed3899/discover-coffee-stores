@@ -1,0 +1,23 @@
+### GET
+GET http://localhost:3000/api/createCoffeeStore
+
+### POST
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+    "title": "My title",
+    "body": "My body"
+}
+
+### DELETE
+DELETE https://jsonplaceholder.typicode.com/posts/1
+
+### PATCH
+PUT https://jsonplaceholder.typicode.com/posts/1
+Content-Type: application/json
+
+{
+    "title":"new pathched title",
+    "body": "new patched body"
+}
