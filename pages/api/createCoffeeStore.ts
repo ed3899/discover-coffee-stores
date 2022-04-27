@@ -27,11 +27,13 @@ const createCoffeeStore = async (
   res: NextApiResponse<Data>
 ) => {
   if (req.method === "POST") {
+    const {id, neighbourhood, address, name, imgUrl, vote} =
+      req.body as AirtableData;
     try {
       // find record
       const findCoffeeStoreRecords = await table
         .select({
-          filterByFormula: `id="3"`,
+          filterByFormula: `id="${id}"`,
         })
         .firstPage();
 
@@ -51,12 +53,12 @@ const createCoffeeStore = async (
         const createRecord = await table.create([
           {
             fields: {
-              id: "1",
-              name: "My favourite coffee store",
-              address: "My address",
-              neighbourhood: "My neighbourhood",
-              vote: 200,
-              imgUrl: "some url",
+              id,
+              name,
+              address,
+              neighbourhood,
+              vote,
+              imgUrl,
             },
           },
         ]);
