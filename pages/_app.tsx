@@ -11,7 +11,19 @@ const ACTION_TYPES = {
   SET_COFFEE_STORES: "SET_COFFEE_STORES",
 };
 
-const storeReducer = (state: any, action: {type: string; payload: any}) => {
+type InitialStateT = {
+  latLong: string;
+  coffeeStores: any[];
+};
+const initialState: InitialStateT = {
+  latLong: "",
+  coffeeStores: [],
+};
+
+const storeReducer = (
+  state: InitialStateT,
+  action: {type: string; payload: InitialStateT}
+) => {
   switch (action.type) {
     case ACTION_TYPES.SET_LAT_LONG: {
       return {...state, latLong: action.payload.latLong};
@@ -29,11 +41,6 @@ const storeReducer = (state: any, action: {type: string; payload: any}) => {
 const StoreContext = createContext({});
 
 const StoreProvider = ({children}: PropsWithChildren<{}>) => {
-  const initialState: any = {
-    latLong: "",
-    coffeeStores: [],
-  };
-
   const [state, dispatch] = useReducer(storeReducer, initialState);
   return (
     <StoreContext.Provider value={{state, dispatch}}>
