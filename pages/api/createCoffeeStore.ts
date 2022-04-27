@@ -9,8 +9,6 @@ const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(
   process.env.AIRTABLE_BASE_KEY!
 );
 
-const table = base("coffee-stores");
-
 type AirtableData = {
   vote: number;
   id: string;
@@ -20,7 +18,9 @@ type AirtableData = {
   imgUrl: string;
 };
 
-type Data = AirtableData[] | {message: string};
+const table = base<AirtableData>("coffee-stores");
+
+type Data = AirtableData[] | any;
 
 const createCoffeeStore = async (
   req: NextApiRequest,
@@ -31,7 +31,7 @@ const createCoffeeStore = async (
       // find record
       const findCoffeeStoreRecords = await table
         .select({
-          filterByFormula: `id="0"`,
+          filterByFormula: `id="3"`,
         })
         .firstPage();
 
@@ -48,7 +48,28 @@ const createCoffeeStore = async (
         res.json(records);
       } else {
         // create record
-        res.json({message: "create record"});
+        const createRecord = await table.create([
+          {
+            fields: {
+              id: "1",
+              name: "My favourite coffee store",
+              address: "My address",
+              neighbourhood: "My neighbourhood",
+              vote: 200,
+              imgUrl: "some url",
+            },
+          },
+        ]);
+
+        const records = createRecord.map(record => {
+          return {
+            ...record.fields,
+          };
+        }) as AirtableData[];
+
+        console.groupEnd();
+
+        res.json({records});
       }
     } catch (error) {
       console.error(`Error finding  store ${error}`);
