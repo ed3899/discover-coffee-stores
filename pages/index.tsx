@@ -24,7 +24,7 @@ import Banner from "../components/banner";
 import Card from "../components/card";
 
 // context
-import {ACTION_TYPES, StoreContext} from "./_app";
+import {ACTION_TYPES, StoreContext} from "../store/store-context";
 
 //% styles
 import styles from "../styles/Home.module.css";

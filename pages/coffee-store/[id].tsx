@@ -25,7 +25,7 @@ import Head from "next/head";
 import Image from "next/image";
 
 // context
-import {StoreContext} from "../_app";
+import {StoreContext} from "../../store/store-context";
 
 //% styles
 import styles from "../../styles/coffee-store.module.css";
