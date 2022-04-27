@@ -60,14 +60,21 @@ const Home: NextPage<
     if (latLong) {
       try {
         const fetchData = async () => {
-          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+          const res = await fetch(
+            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
+          );
+
+          const coffeeStores = await res.json();
+
           // console.log({fetchedCoffeeStores});
           dispatch({
             type: ACTION_TYPES.SET_COFFEE_STORES,
             payload: {
-              coffeeStores: fetchedCoffeeStores,
+              coffeeStores,
             },
           });
+
+          setCoffeeStoresNearUserError({isError: false, errorMsg: ""});
         };
 
         fetchData();

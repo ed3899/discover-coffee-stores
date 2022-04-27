@@ -14,6 +14,8 @@ const getUrlForCoffeeStores = (
 ) => {
   //https://api.foursquare.com/v3/places/search?query=coffee-shop&ll=20.400417%2C-89.134857&categories=13035&limit=6
 
+  //https://api.foursquare.com/v3/places/search?query=coffee-shop&ll=43.71517797136566,-79.58955302341926&categories=13035&limit=6
+
   const cleanedString = _latLong
     .trim()
     .split("")
@@ -65,6 +67,8 @@ export const fetchCoffeeStores = async (
   _latlong: string = "20.400417,-89.134857",
   _limit: number = 6
 ) => {
+  //43.755860460839216, -79.44467082504053
+
   const photos = await getListOfCoffeeStoresPhotos();
 
   const url = getUrlForCoffeeStores("coffee-shop", _latlong, 13035, _limit);
@@ -77,8 +81,8 @@ export const fetchCoffeeStores = async (
       "Access-Control-Allow-Origin": "*",
     },
   };
+
   const res = await fetch(url, options).catch(err => {
-    console.log({url, options});
     throw new Error(`fetching res error ${err}`);
   });
 

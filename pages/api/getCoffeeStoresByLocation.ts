@@ -33,19 +33,24 @@ const getCoffeeStoresByLocation = async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) => {
-  const {_latLong, _limit} = req.query;
+  const {latLong, limit} = req.query;
 
   // Safeguards for both const are needed, we'll go with the asumption that they're both always a string
-  const latLong = (_latLong as string)
+  const _latLong = (latLong as string)
     .trim()
     .split("")
     .filter(l => l !== " ")
     .join("");
 
-  const limit = Number(_limit as string);
+  const _limit = Number(limit as string);
+
+  console.log({
+    _latLong,
+    _limit,
+  });
 
   try {
-    const response = await fetchCoffeeStores(latLong, limit);
+    const response = await fetchCoffeeStores(_latLong, _limit);
 
     res.status(200);
     res.json(response);
