@@ -3,7 +3,7 @@
 // native
 import type {NextApiRequest, NextApiResponse} from "next";
 // external
-import Airtable, {Record} from "airtable";
+import Airtable from "airtable";
 
 const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(
   process.env.AIRTABLE_BASE_KEY!
@@ -11,7 +11,21 @@ const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(
 
 const table = base("coffee-stores");
 
-const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
+type AirtableData = {
+  vote: number;
+  id: string;
+  name: string;
+  address: string;
+  neighbourhood: string;
+  imgUrl: string;
+};
+
+type Data = AirtableData[] | {message: string};
+
+const createCoffeeStore = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) => {
   if (req.method === "POST") {
     try {
       // find record
@@ -29,7 +43,8 @@ const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
           return {
             ...record.fields,
           };
-        });
+        }) as AirtableData[];
+
         res.json(records);
       } else {
         // create record
