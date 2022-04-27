@@ -11,8 +11,25 @@ const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(
 
 const table = base("coffee-stores");
 
-const createCoffeeStore = (req: NextApiRequest, res: NextApiResponse) => {
-  res.json({message: "Hi There"});
+const createCoffeeStore = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === "POST") {
+    // find record
+    const findCoffeeStoreRecords = await table
+      .select({
+        filterByFormula: `id="0"`,
+      })
+      .firstPage();
+
+    console.group("createCoffeeStoreApi");
+    console.log({findCoffeeStoreRecords});
+
+    if (findCoffeeStoreRecords.length !== 0) {
+      res.json(findCoffeeStoreRecords);
+    } else {
+      // create record
+      res.json({message: "create record"});
+    }
+  }
 };
 
 export default createCoffeeStore;

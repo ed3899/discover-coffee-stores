@@ -1,13 +1,11 @@
 ### GET
-GET http://localhost:3000/api/createCoffeeStore
 
 ### POST
-POST https://jsonplaceholder.typicode.com/posts
+POST http://localhost:3000/api/createCoffeeStore
 Content-Type: application/json
 
 {
-    "title": "My title",
-    "body": "My body"
+    "message": "Hi There"
 }
 
 ### DELETE
