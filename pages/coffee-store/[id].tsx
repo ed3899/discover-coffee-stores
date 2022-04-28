@@ -75,11 +75,15 @@ const CoffeeStore: NextPage<
 
   const id = router.query.id as string;
 
-  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const [coffeeStore, setCoffeeStore] = useState(
+    initialProps.coffeeStore || {}
+  );
 
   const {
     state: {coffeeStores},
   } = useContext(StoreContext);
+
+  console.log(coffeeStores);
 
   /**
    * @abstract Creates a new coffee stores or returns one if it already exists.
@@ -122,15 +126,15 @@ const CoffeeStore: NextPage<
   };
 
   useEffect(() => {
-    // console.group("useEffect");
-    // console.log("useEffect");
+    console.group("useEffect");
+    console.log("useEffect");
 
     if (isEmpty(initialProps.coffeeStore)) {
-      // console.log(initialProps.coffeeStore);
-      // console.log("First if");
-      // console.log(`Coffee stores from context ${coffeeStores}`);
+      console.log(initialProps.coffeeStore);
+      console.log("First if");
+      console.log(`Coffee stores from context ${coffeeStores}`);
       if (coffeeStores.length > 0) {
-        // console.log("Second if");
+        console.log("Second if");
         const coffeeStoreFromContext = coffeeStores.find(
           coffeeStore => coffeeStore.fsq_id === id
         );
@@ -146,7 +150,7 @@ const CoffeeStore: NextPage<
         initialProps.coffeeStore as CoffeeStoreT & {imgUrl: string}
       );
     }
-    // console.groupEnd();
+    console.groupEnd();
   }, [id, initialProps, initialProps.coffeeStore, coffeeStores]);
 
   const [votingCount, setVotingCount] = useState(0);
