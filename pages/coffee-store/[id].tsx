@@ -80,6 +80,14 @@ const CoffeeStore: NextPage<
     state: {coffeeStores},
   } = useContext(StoreContext);
 
+  const handleCreateCoffeeStore = async () => {
+    try {
+      const response = await fetch("/api/createCoffeeStore");
+    } catch (error) {
+      console.error("Error creating coffee store", error);
+    }
+  };
+
   useEffect(() => {
     console.group("useEffect");
     console.log("useEffect");
