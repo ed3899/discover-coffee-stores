@@ -84,7 +84,7 @@ const CoffeeStore: NextPage<
    * @abstract Creates a new coffee stores or returns one if it already exists.
    * @async
    * @description Uses "/api/createCoffeeStore"
-   * @param coffeeStore 
+   * @param coffeeStore
    */
   const handleCreateCoffeeStore = async (
     coffeeStore: CoffeeStoreT & {imgUrl: string}
@@ -148,9 +148,12 @@ const CoffeeStore: NextPage<
     console.groupEnd();
   }, [id]);
 
+  const [votingCount, setVotingCount] = useState(1);
   //handlers
   const handleUpvoteButton = () => {
     console.log("handle upvote");
+    let count = votingCount + 1;
+    setVotingCount(count);
   };
 
   return (
@@ -205,7 +208,7 @@ const CoffeeStore: NextPage<
 
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/star.svg" width={50} height={50} />
-              <p className={styles.text}>1</p>
+              <p className={styles.text}>{votingCount}</p>
             </div>
 
             <button
