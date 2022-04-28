@@ -64,9 +64,10 @@ const Home: NextPage<
             `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
           );
 
-          const coffeeStores = await res.json();
+          const coffeeStores = (await res.json()) as (CoffeeStoreT & {imgUrl:string})[];
 
-          // console.log({fetchedCoffeeStores});
+          // console.log({coffeeStores});
+
           dispatch({
             type: ACTION_TYPES.SET_COFFEE_STORES,
             payload: {

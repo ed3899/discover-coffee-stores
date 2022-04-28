@@ -80,9 +80,35 @@ const CoffeeStore: NextPage<
     state: {coffeeStores},
   } = useContext(StoreContext);
 
-  const handleCreateCoffeeStore = async () => {
+  const handleCreateCoffeeStore = async (
+    coffeeStore: CoffeeStoreT & {imgUrl: string}
+  ) => {
     try {
-      const response = await fetch("/api/createCoffeeStore");
+      const {
+        fsq_id,
+        name,
+        imgUrl,
+        location: {neighborhood, formatted_address},
+      } = coffeeStore;
+
+      const response = await fetch("/api/createCoffeeStore", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: fsq_id,
+          name,
+          vote: 0,
+          imgUrl,
+          neighborhood: neighborhood || "",
+          address: formatted_address || "",
+        }),
+      });
+
+      const dbCoffeeStore = await response.json();
+
+      console.log({dbCoffeeStore});
     } catch (error) {
       console.error("Error creating coffee store", error);
     }
@@ -98,11 +124,14 @@ const CoffeeStore: NextPage<
       console.log(`Coffee stores from context ${coffeeStores}`);
       if (coffeeStores.length > 0) {
         console.log("Second if");
-        const findCoffeeStoreById = coffeeStores.find(
+        const coffeeStoreFromContext = coffeeStores.find(
           coffeeStore => coffeeStore.fsq_id === id
         );
 
-        setCoffeeStore(findCoffeeStoreById);
+        if (coffeeStoreFromContext) {
+          setCoffeeStore(coffeeStoreFromContext);
+          handleCreateCoffeeStore(coffeeStoreFromContext);
+        }
       }
     }
     console.groupEnd();

@@ -1,5 +1,6 @@
 //% libs
 import {createContext, Dispatch, PropsWithChildren, useReducer} from "react";
+import type {CoffeeStoreT} from "../lib/coffee-stores";
 
 export const ACTION_TYPES = {
   SET_LAT_LONG: "SET_LAT_LONG",
@@ -8,7 +9,7 @@ export const ACTION_TYPES = {
 
 type InitialStateT = {
   latLong: string;
-  coffeeStores: any[];
+  coffeeStores: (CoffeeStoreT & {imgUrl: string})[];
 };
 const initialState: InitialStateT = {
   latLong: "",
