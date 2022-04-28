@@ -1,6 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 //% libs
-import table, {getMinifiedRecords} from "../../lib/airtable";
+import table, {
+  getMinifiedRecords,
+  findRecordByFilter,
+} from "../../lib/airtable";
 // types
 import type {NextApiRequest, NextApiResponse} from "next";
 
@@ -12,18 +15,9 @@ const getCoffeeStoreById = async (
 
   try {
     if (id) {
-      const findCoffeeStoreRecords = await table
-        .select({
-          filterByFormula: `id="${id}"`,
-        })
-        .firstPage();
+      const records = await findRecordByFilter(id as string);
 
-      // console.group("createCoffeeStoreApi");
-      // console.log({findCoffeeStoreRecords});
-
-      if (findCoffeeStoreRecords.length !== 0) {
-        const records = getMinifiedRecords(findCoffeeStoreRecords);
-
+      if (records.length !== 0) {
         res.json(records);
       } else {
         res.json({message: `Id could not be found`});

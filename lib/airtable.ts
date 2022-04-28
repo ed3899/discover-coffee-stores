@@ -22,4 +22,14 @@ export const getMinifiedRecords = (records: Records<AirtableData>) => {
   return records.map(getMinifiedRecord) as AirtableData[];
 };
 
+export const findRecordByFilter = async (id: string) => {
+  const findCoffeeStoreRecords = await table
+    .select({
+      filterByFormula: `id="${id}"`,
+    })
+    .firstPage();
+
+  return getMinifiedRecords(findCoffeeStoreRecords);
+};
+
 export default table;

@@ -5,7 +5,7 @@ import type {NextApiRequest, NextApiResponse} from "next";
 // local
 import table, {getMinifiedRecords} from "../../lib/airtable";
 //types
-import type {AirtableData} from "../../lib/airtable";
+import {AirtableData, findRecordByFilter} from "../../lib/airtable";
 
 type Data = AirtableData[] | any;
 
@@ -20,18 +20,9 @@ const createCoffeeStore = async (
       // find record
 
       if (id) {
-        const findCoffeeStoreRecords = await table
-          .select({
-            filterByFormula: `id="${id}"`,
-          })
-          .firstPage();
+        const records = await findRecordByFilter(id);
 
-        // console.group("createCoffeeStoreApi");
-        // console.log({findCoffeeStoreRecords});
-
-        if (findCoffeeStoreRecords.length !== 0) {
-          const records = getMinifiedRecords(findCoffeeStoreRecords);
-
+        if (records.length !== 0) {
           res.json(records);
         } else {
           // create record

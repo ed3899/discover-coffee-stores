@@ -1,12 +1,17 @@
 ### GET
-GET http://localhost:3000/api/getCoffeeStoreById?id=54e3e2994
+GET http://localhost:3000/api/getCoffeeStoreById?id=54e3e299498e7c46e1f7974b
 
 ### POST
 POST http://localhost:3000/api/createCoffeeStore
 Content-Type: application/json
 
 {
-  "id": ""
+  "id": "7",
+  "name": "coffee name",
+  "address": "coffee address",
+  "neighbourhood": "coffee ne",
+  "vote": 5,
+  "imgUrl": "img url"
 }
 
 ### DELETE
