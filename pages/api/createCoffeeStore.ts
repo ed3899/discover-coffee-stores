@@ -2,23 +2,10 @@
 //% libs
 // native
 import type {NextApiRequest, NextApiResponse} from "next";
-// external
-import Airtable from "airtable";
-
-const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(
-  process.env.AIRTABLE_BASE_KEY!
-);
-
-type AirtableData = {
-  vote: number;
-  id: string;
-  name: string;
-  address: string;
-  neighbourhood: string;
-  imgUrl: string;
-};
-
-const table = base<AirtableData>("coffee-stores");
+// local
+import table, {getMinifiedRecords} from "../../lib/airtable";
+//types
+import type {AirtableData} from "../../lib/airtable";
 
 type Data = AirtableData[] | any;
 
@@ -39,15 +26,11 @@ const createCoffeeStore = async (
           })
           .firstPage();
 
-        console.group("createCoffeeStoreApi");
-        console.log({findCoffeeStoreRecords});
+        // console.group("createCoffeeStoreApi");
+        // console.log({findCoffeeStoreRecords});
 
         if (findCoffeeStoreRecords.length !== 0) {
-          const records = findCoffeeStoreRecords.map(record => {
-            return {
-              ...record.fields,
-            };
-          }) as AirtableData[];
+          const records = getMinifiedRecords(findCoffeeStoreRecords);
 
           res.json(records);
         } else {
@@ -67,13 +50,9 @@ const createCoffeeStore = async (
               },
             ]);
 
-            const records = createRecord.map(record => {
-              return {
-                ...record.fields,
-              };
-            }) as AirtableData[];
+            const records = getMinifiedRecords(createRecord);
 
-            console.groupEnd();
+            // console.groupEnd();
 
             res.json({records});
           } else {

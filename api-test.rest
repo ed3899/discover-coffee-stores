@@ -5,12 +5,8 @@ POST http://localhost:3000/api/createCoffeeStore
 Content-Type: application/json
 
 {
-  "vote": 5,
-  "id": "25",
-  "name": "",
-  "address": "string",
-  "neighbourhood": "string",
-  "imgUrl": "string"
+  "id": ""
+  
 }
 
 ### DELETE
