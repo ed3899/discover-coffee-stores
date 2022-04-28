@@ -1,5 +1,5 @@
 ### GET
-GET http://localhost:3000/api/getCoffeeStoreById?id=123123
+GET http://localhost:3000/api/getCoffeeStoreById?id=54e3e2994
 
 ### POST
 POST http://localhost:3000/api/createCoffeeStore
@@ -7,7 +7,6 @@ Content-Type: application/json
 
 {
   "id": ""
-  
 }
 
 ### DELETE
