@@ -16,10 +16,11 @@ export type AirtableData = {
 const table = base<AirtableData>("coffee-stores");
 
 const getMinifiedRecord = (record: Record<AirtableData>) => ({
+  recordId: record.id,
   ...record.fields,
 });
 export const getMinifiedRecords = (records: Records<AirtableData>) => {
-  return records.map(getMinifiedRecord) as AirtableData[];
+  return records.map(getMinifiedRecord);
 };
 
 export const findRecordByFilter = async (id: string) => {

@@ -1,7 +1,10 @@
 //% libs
 // native
 import type {NextApiRequest, NextApiResponse} from "next";
-import table, {findRecordByFilter} from "../../lib/airtable";
+import table, {
+  findRecordByFilter,
+  getMinifiedRecords,
+} from "../../lib/airtable";
 
 const favouriteCoffeeStoreById = async (
   req: NextApiRequest,
@@ -19,13 +22,11 @@ const favouriteCoffeeStoreById = async (
 
           const calculateVoting = Number(record.vote) + 1;
 
-          console.log(record.vote, {calculateVoting});
-
           //update a record
 
           const updateRecord = await table.update([
             {
-              id: record.id,
+              id: record.recordId,
               fields: {
                 vote: calculateVoting,
               },
@@ -33,7 +34,9 @@ const favouriteCoffeeStoreById = async (
           ]);
 
           if (updateRecord) {
-            res.json(updateRecord);
+            const minifiedRecords = getMinifiedRecords(updateRecord);
+
+            res.json(minifiedRecords);
           }
 
           res.json(record);
