@@ -5,10 +5,11 @@ import {useContext, useEffect, useState} from "react";
 
 // external
 import cls from "classnames";
+import useSWR from "swr";
 
 // local
 import {CoffeeStoreT, fetchCoffeeStores} from "../../lib/coffee-stores";
-import {isEmpty} from "../../utils";
+import {isEmpty, fetcher} from "../../utils";
 
 //types
 import {
@@ -114,22 +115,22 @@ const CoffeeStore: NextPage<
 
       const dbCoffeeStore = await response.json();
 
-      console.log({dbCoffeeStore});
+      // console.log({dbCoffeeStore});
     } catch (error) {
       console.error("Error creating coffee store", error);
     }
   };
 
   useEffect(() => {
-    console.group("useEffect");
-    console.log("useEffect");
+    // console.group("useEffect");
+    // console.log("useEffect");
 
     if (isEmpty(initialProps.coffeeStore)) {
-      console.log(initialProps.coffeeStore);
-      console.log("First if");
-      console.log(`Coffee stores from context ${coffeeStores}`);
+      // console.log(initialProps.coffeeStore);
+      // console.log("First if");
+      // console.log(`Coffee stores from context ${coffeeStores}`);
       if (coffeeStores.length > 0) {
-        console.log("Second if");
+        // console.log("Second if");
         const coffeeStoreFromContext = coffeeStores.find(
           coffeeStore => coffeeStore.fsq_id === id
         );
@@ -145,10 +146,23 @@ const CoffeeStore: NextPage<
         initialProps.coffeeStore as CoffeeStoreT & {imgUrl: string}
       );
     }
-    console.groupEnd();
-  }, [id]);
+    // console.groupEnd();
+  }, [id, initialProps, initialProps.coffeeStore, coffeeStores]);
 
   const [votingCount, setVotingCount] = useState(1);
+
+  //! Change type
+
+  const {data, error} = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      console.log("data from swr", data);
+      setCoffeeStore(data[0]);
+      setVotingCount(data[0].vote);
+    }
+  }, [data]);
+
   //handlers
   const handleUpvoteButton = () => {
     console.log("handle upvote");
@@ -156,8 +170,13 @@ const CoffeeStore: NextPage<
     setVotingCount(count);
   };
 
+  if (error) {
+    return <div>Something went wrong retrieving coffee store page</div>;
+  }
+
+  //Conditional rendering based on two components
   return (
-    (coffeeStore as any).location && (
+    ((coffeeStore as any).location || coffeeStore) && (
       <div className={styles.layout}>
         <Head>
           <title>{(coffeeStore as CoffeeStoreT).name}</title>
@@ -193,15 +212,20 @@ const CoffeeStore: NextPage<
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/nearMe.svg" width={50} height={50} />
               <p className={styles.text}>
-                {(coffeeStore as CoffeeStoreT).location.formatted_address}
+                {(coffeeStore as any).address ||
+                  ((coffeeStore as any).location &&
+                    (coffeeStore as CoffeeStoreT).location.formatted_address)}
               </p>
             </div>
 
-            {(coffeeStore as CoffeeStoreT).location.neighborhood && (
+            {((coffeeStore as any) ||
+              (coffeeStore as CoffeeStoreT).location.neighborhood) && (
               <div className={styles.iconWrapper}>
                 <Image src="/static/icons/places.svg" width={50} height={50} />
                 <p className={styles.text}>
-                  {(coffeeStore as CoffeeStoreT).location.neighborhood![0]}
+                  {((coffeeStore as any).location &&
+                    (coffeeStore as any).location.neighborhood) ||
+                    (coffeeStore as any).neighbourhood}
                 </p>
               </div>
             )}
