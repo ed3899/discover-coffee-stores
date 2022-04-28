@@ -14,6 +14,14 @@ Content-Type: application/json
   "imgUrl": "img url"
 }
 
+### PUT
+PUT http://localhost:3000/api/favouriteCoffeeStoreById
+Content-Type: application/json
+
+{
+  "id": "54e3e299498e7c46e1f7974b"
+}
+
 ### DELETE
 DELETE https://jsonplaceholder.typicode.com/posts/1
 

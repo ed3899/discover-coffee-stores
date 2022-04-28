@@ -174,8 +174,9 @@ const CoffeeStore: NextPage<
     return <div>Something went wrong retrieving coffee store page</div>;
   }
 
-  //Conditional rendering based on two components
+  //! Conditional rendering based on two components
   return (
+    //! This is bad practice, ideally for conditional rendering an additional component should be created. But, for the sake of finishing this course it does the job
     ((coffeeStore as any).location || coffeeStore) && (
       <div className={styles.layout}>
         <Head>
