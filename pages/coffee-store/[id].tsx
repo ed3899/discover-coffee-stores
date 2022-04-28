@@ -41,7 +41,7 @@ export const getStaticProps = async ({params}: GetStaticPropsContext) => {
 
   return {
     props: {
-      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
+      coffeeStore: findCoffeeStoreById ?? {}, // Changed from using ternary
     },
   };
 };
@@ -80,6 +80,12 @@ const CoffeeStore: NextPage<
     state: {coffeeStores},
   } = useContext(StoreContext);
 
+  /**
+   * @abstract Creates a new coffee stores or returns one if it already exists.
+   * @async
+   * @description Uses "/api/createCoffeeStore"
+   * @param coffeeStore 
+   */
   const handleCreateCoffeeStore = async (
     coffeeStore: CoffeeStoreT & {imgUrl: string}
   ) => {
@@ -133,6 +139,11 @@ const CoffeeStore: NextPage<
           handleCreateCoffeeStore(coffeeStoreFromContext);
         }
       }
+    } else {
+      //SSG
+      handleCreateCoffeeStore(
+        initialProps.coffeeStore as CoffeeStoreT & {imgUrl: string}
+      );
     }
     console.groupEnd();
   }, [id]);
