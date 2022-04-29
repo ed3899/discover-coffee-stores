@@ -243,7 +243,12 @@ const CoffeeStore: NextPage<
 
         <div className={cls("glass", styles.col2)}>
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/nearMe.svg" width={50} height={50} />
+            <Image
+              src="/static/icons/nearMe.svg"
+              width={50}
+              height={50}
+              alt="near Me icon"
+            />
             <p className={styles.text}>
               {(coffeeStore as any).address ||
                 ((coffeeStore as any).location &&
@@ -254,7 +259,12 @@ const CoffeeStore: NextPage<
           {((coffeeStore as any) ||
             (coffeeStore as CoffeeStoreT).location.neighborhood) && (
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/places.svg" width={50} height={50} />
+              <Image
+                src="/static/icons/places.svg"
+                width={50}
+                height={50}
+                alt="places icon"
+              />
               <p className={styles.text}>
                 {((coffeeStore as any).location &&
                   (coffeeStore as any).location.neighborhood) ||
@@ -264,7 +274,12 @@ const CoffeeStore: NextPage<
           )}
 
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/star.svg" width={50} height={50} />
+            <Image
+              src="/static/icons/star.svg"
+              width={50}
+              height={50}
+              alt="star icon"
+            />
             <p className={styles.text}>{votingCount}</p>
           </div>
 

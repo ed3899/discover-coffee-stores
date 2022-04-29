@@ -127,7 +127,12 @@ const Home: NextPage<
 
         {/* Hero image */}
         <div className={styles.heroImage}>
-          <Image src="/static/hero-image.png" width={700} height={400} />
+          <Image
+            src="/static/hero-image.png"
+            width={700}
+            height={400}
+            alt="hero image"
+          />
         </div>
 
         {/* User location based stores */}
