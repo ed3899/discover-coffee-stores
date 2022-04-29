@@ -57,37 +57,43 @@ const Home: NextPage<
   const {coffeeStores, latLong} = state;
 
   useEffect(() => {
-    if (latLong) {
-      try {
-        const fetchData = async () => {
-          const res = await fetch(
-            `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
-          );
+    const setCoffeeStoresByLocation = async () => {
+      if (latLong) {
+        try {
+          const fetchData = async () => {
+            const res = await fetch(
+              `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=30`
+            );
 
-          const coffeeStores = (await res.json()) as (CoffeeStoreT & {imgUrl:string})[];
+            const coffeeStores = (await res.json()) as (CoffeeStoreT & {
+              imgUrl: string;
+            })[];
 
-          // console.log({coffeeStores});
+            // console.log({coffeeStores});
 
-          dispatch({
-            type: ACTION_TYPES.SET_COFFEE_STORES,
-            payload: {
-              coffeeStores,
-            },
+            dispatch({
+              type: ACTION_TYPES.SET_COFFEE_STORES,
+              payload: {
+                coffeeStores,
+              },
+            });
+
+            setCoffeeStoresNearUserError({isError: false, errorMsg: ""});
+          };
+
+          fetchData();
+        } catch (error) {
+          setCoffeeStoresNearUserError({
+            isError: true,
+            errorMsg: (error as Error).message,
           });
-
-          setCoffeeStoresNearUserError({isError: false, errorMsg: ""});
-        };
-
-        fetchData();
-      } catch (error) {
-        setCoffeeStoresNearUserError({
-          isError: true,
-          errorMsg: (error as Error).message,
-        });
-        throw new Error(`at useEffect ${error}`);
+          throw new Error(`at useEffect ${error}`);
+        }
       }
-    }
-  }, [latLong]);
+    };
+
+    setCoffeeStoresByLocation();
+  }, [latLong, dispatch]);
 
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();
