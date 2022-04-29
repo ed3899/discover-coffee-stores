@@ -38,8 +38,6 @@ const favouriteCoffeeStoreById = async (
 
             res.json(minifiedRecords);
           }
-
-          res.json(record);
         } else {
           res.json({message: "Coffee store id doesn't exist", id});
         }
@@ -52,6 +50,8 @@ const favouriteCoffeeStoreById = async (
       res.json({message: "Error upvoting our coffee store", error});
     }
   } else {
+    res.status(500);
+    res.json({message: "Wrong request"});
   }
 };
 
