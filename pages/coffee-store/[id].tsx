@@ -69,10 +69,6 @@ const CoffeeStore: NextPage<
 > = initialProps => {
   const router = useRouter();
 
-  if (router.isFallback) {
-    return <div>Loading</div>;
-  }
-
   const id = router.query.id as string;
 
   const [coffeeStore, setCoffeeStore] = useState(
@@ -83,7 +79,7 @@ const CoffeeStore: NextPage<
     state: {coffeeStores},
   } = useContext(StoreContext);
 
-  console.log(coffeeStores);
+  console.log(initialProps.coffeeStore);
 
   /**
    * @abstract Creates a new coffee stores or returns one if it already exists.
@@ -146,12 +142,24 @@ const CoffeeStore: NextPage<
       }
     } else {
       //SSG
-      handleCreateCoffeeStore(
-        initialProps.coffeeStore as CoffeeStoreT & {imgUrl: string}
-      );
+      //! Safeguard against an undefined value
+
+      if (initialProps.coffeeStore) {
+        handleCreateCoffeeStore(
+          initialProps.coffeeStore as CoffeeStoreT & {imgUrl: string}
+        );
+      }
     }
     console.groupEnd();
   }, [id, initialProps, initialProps.coffeeStore, coffeeStores]);
+
+  // const {
+  //   name = "",
+  //   imgUrl = "",
+  //   location: {neighborhood = "", formatted_address = ""},
+  // } = coffeeStore as CoffeeStoreT & {
+  //   imgUrl: string;
+  // };
 
   const [votingCount, setVotingCount] = useState(0);
 
@@ -166,6 +174,10 @@ const CoffeeStore: NextPage<
       setVotingCount(data[0].vote);
     }
   }, [data]);
+
+  if (router.isFallback) {
+    return <div>Loading</div>;
+  }
 
   //handlers
   const handleUpvoteButton = async () => {
@@ -198,74 +210,70 @@ const CoffeeStore: NextPage<
   //! Conditional rendering based on two components
   return (
     //! This is bad practice, ideally for conditional rendering an additional component should be created. But, for the sake of finishing this course it does the job
-    ((coffeeStore as any).location || coffeeStore) && (
-      <div className={styles.layout}>
-        <Head>
-          <title>{(coffeeStore as CoffeeStoreT).name}</title>
-        </Head>
+    <div className={styles.layout}>
+      <Head>
+        <title>{(coffeeStore as CoffeeStoreT).name}</title>
+      </Head>
 
-        <div className={styles.backToHomeLink}>
-          <Link href="/">
-            <a> ⟸ Back to home</a>
-          </Link>
-        </div>
+      <div className={styles.backToHomeLink}>
+        <Link href="/">
+          <a> ⟸ Back to home</a>
+        </Link>
+      </div>
 
-        <div className={styles.container}>
-          <div className={styles.col1}>
-            <div className={styles.nameWrapper}>
-              <h1 className={styles.name}>
-                {(coffeeStore as CoffeeStoreT).name}
-              </h1>
-            </div>
-
-            <Image
-              src={
-                (coffeeStore as CoffeeStoreT & {imgUrl: string}).imgUrl ||
-                "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-              }
-              width={600}
-              height={360}
-              className={styles.storeImg}
-              alt={(coffeeStore as CoffeeStoreT).name}
-            />
+      <div className={styles.container}>
+        <div className={styles.col1}>
+          <div className={styles.nameWrapper}>
+            <h1 className={styles.name}>
+              {(coffeeStore as CoffeeStoreT).name}
+            </h1>
           </div>
 
-          <div className={cls("glass", styles.col2)}>
+          <Image
+            src={
+              (coffeeStore as CoffeeStoreT & {imgUrl: string}).imgUrl ||
+              "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+            }
+            width={600}
+            height={360}
+            className={styles.storeImg}
+            alt={(coffeeStore as CoffeeStoreT).name}
+          />
+        </div>
+
+        <div className={cls("glass", styles.col2)}>
+          <div className={styles.iconWrapper}>
+            <Image src="/static/icons/nearMe.svg" width={50} height={50} />
+            <p className={styles.text}>
+              {(coffeeStore as any).address ||
+                ((coffeeStore as any).location &&
+                  (coffeeStore as CoffeeStoreT).location.formatted_address)}
+            </p>
+          </div>
+
+          {((coffeeStore as any) ||
+            (coffeeStore as CoffeeStoreT).location.neighborhood) && (
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/nearMe.svg" width={50} height={50} />
+              <Image src="/static/icons/places.svg" width={50} height={50} />
               <p className={styles.text}>
-                {(coffeeStore as any).address ||
-                  ((coffeeStore as any).location &&
-                    (coffeeStore as CoffeeStoreT).location.formatted_address)}
+                {((coffeeStore as any).location &&
+                  (coffeeStore as any).location.neighborhood) ||
+                  (coffeeStore as any).neighbourhood}
               </p>
             </div>
+          )}
 
-            {((coffeeStore as any) ||
-              (coffeeStore as CoffeeStoreT).location.neighborhood) && (
-              <div className={styles.iconWrapper}>
-                <Image src="/static/icons/places.svg" width={50} height={50} />
-                <p className={styles.text}>
-                  {((coffeeStore as any).location &&
-                    (coffeeStore as any).location.neighborhood) ||
-                    (coffeeStore as any).neighbourhood}
-                </p>
-              </div>
-            )}
-
-            <div className={styles.iconWrapper}>
-              <Image src="/static/icons/star.svg" width={50} height={50} />
-              <p className={styles.text}>{votingCount}</p>
-            </div>
-
-            <button
-              className={styles.upvoteButton}
-              onClick={handleUpvoteButton}>
-              Up vote!
-            </button>
+          <div className={styles.iconWrapper}>
+            <Image src="/static/icons/star.svg" width={50} height={50} />
+            <p className={styles.text}>{votingCount}</p>
           </div>
+
+          <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
+            Up vote!
+          </button>
         </div>
       </div>
-    )
+    </div>
   );
 };
 
